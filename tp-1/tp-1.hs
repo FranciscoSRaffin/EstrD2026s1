@@ -103,8 +103,7 @@ yTambien _ _ = False
 -- 3.d
 oBien :: Bool-> Bool-> Bool
 oBien True _ = True
-oBien _ True = True
-oBien _ _ = False
+oBien _ b = b
 
 
 
