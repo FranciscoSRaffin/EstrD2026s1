@@ -28,6 +28,7 @@ maxDelPar (x, y) = if (x > y) then x
 
 -- 1
 data Dir = Norte | Sur | Este | Oeste
+     deriving Show
 
 -- 1.a
 opuesto :: Dir -> Dir
@@ -53,10 +54,11 @@ siguiente _ = Norte
  
 -- 2
 data DiaDeSemana = Lunes | Martes | Miercoles | Jueves | Viernes | Sabado | Domingo
+     deriving Show
 
 -- 2.a
 primeroYUltimoDia :: (DiaDeSemana, DiaDeSemana)
-primeroYUltimoDia (Lunes, Domingo)
+primeroYUltimoDia = (Lunes, Domingo)
 
 -- 2.b
 empiezaConM :: DiaDeSemana -> Bool
@@ -80,7 +82,7 @@ posicionEnSemana Domingo = 6
 -- 2.d
 estaEnElMedio :: DiaDeSemana -> Bool
 estaEnElMedio Lunes = False 
-estaEnElMedio Dmingo = False
+estaEnElMedio Domingo = False
 estaEnElMedio _ = True
 
 -- 3.a
@@ -109,23 +111,24 @@ oBien _ _ = False
 -- REGISTROS
 
 -- 1
-data Persona = P String Int
+data Persona = Per String Int
+     deriving Show
 
 -- 1.a
 nombre :: Persona -> String
-nombre P ( n _ ) = n
+nombre (Per n _) = n
 
 -- 1.b
 edad :: Persona -> Int
-nombre P ( _ e ) = e
+edad (Per _ e) = e
 
 -- 1.c
 crecer :: Persona -> Persona
-crecer P ( n e ) = P ( n (e + 1) ) 
+crecer (Per n e) = Per n (e + 1)
 
 -- 1.d
-cambioDeNombre :: String-> Persona -> Persona
-cambioDeNombre nn P ( nv e ) = P ( nn e ) 
+cambioDeNombre :: String -> Persona -> Persona
+cambioDeNombre nn (Per _ e) = Per nn e
 
 -- 1.h
 esMayorQueLaOtra :: Persona -> Persona -> Bool
@@ -137,24 +140,26 @@ laQueEsMayor p1 p2 = if (esMayorQueLaOtra p1 p2) then p1 else p2
 
 
 -- 2
-data Pokemon = P (TipoDePokemon Int)
+data Pokemon = P TipoDePokemon Int
+     deriving Show
 data TipoDePokemon = Agua | Fuego | Planta
-
-data Entrenador = E (String Pokemon Pokemon)
+     deriving Show
+data Entrenador = E String Pokemon Pokemon
+     deriving Show
 
 -- 2.a
 superaA :: Pokemon -> Pokemon -> Bool
-superaA P ( Agua _ ) P ( Fuego _ ) = True
-superaA P ( Fuego _ ) P ( Planta _ ) = True
-superaA P ( Planta _ ) P ( Agua _ ) = True
+superaA (P Agua _) (P Fuego _) = True
+superaA (P Fuego _) (P Planta _) = True
+superaA (P Planta _) (P Agua _) = True
 superaA _ _ = False
 
 -- 2.b
 cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
-cantidadDePokemonDe t E ( _ p1 p2 ) = ( cantidadDePokemonDe_EnPokemon t p1 ) + ( cantidadDePokemonDe_EnPokemon t p2 )  
+cantidadDePokemonDe t (E _ p1 p2) = cantidadDePokemonDe_EnPokemon t p1 + cantidadDePokemonDe_EnPokemon t p2
 
 cantidadDePokemonDe_EnPokemon :: TipoDePokemon -> Pokemon -> Int
-cantidadDePokemonDe_EnPokemon t P ( tp _ ) = if ( sonMismoTipo t tp ) then 1 else 0 
+cantidadDePokemonDe_EnPokemon t (P tp _) = if sonMismoTipo t tp then 1 else 0
 
 sonMismoTipo :: TipoDePokemon -> TipoDePokemon -> Bool
 sonMismoTipo Agua Agua = True
@@ -164,7 +169,7 @@ sonMismoTipo _ _ = False
 
 -- 2.c
 juntarPokemon :: (Entrenador, Entrenador) -> [Pokemon]
-juntarPokemon E ( _ p1 p2 ) E ( _ p3 p4 ) = [p1, p2, p3, p4]
+juntarPokemon ((E _ p1 p2), (E _ p3 p4)) = [p1, p2, p3, p4]
 
 
 -- FUNCIONES POLIMORFICAS
@@ -194,19 +199,19 @@ swap (a,b) = (b,a)
 
 -- 1.b
 estaVacia :: [a] -> Bool
-estaVacia Nil = True
+estaVacia [] = True
 estaVacia _ = False
 
 -- 1.c
 elPrimero :: [a] -> a
-elPrimero :: a:_ -> a
+elPrimero (x:_) = x
 
 -- 1.d
 sinElPrimero :: [a] -> [a]
-sinElPrimero :: _:xs -> xs
+sinElPrimero (_:xs) = xs
 
 -- 1.e
 splitHead :: [a] -> (a, [a])
-splitHead :: x:xs -> (x, xs)
+splitHead (x:xs) = (x, xs)
 
 
