@@ -50,8 +50,13 @@ siguiente :: Dir -> Dir
 siguiente Norte = Este  
 siguiente Sur = Oeste
 siguiente Este = Sur 
-siguiente _ = Norte
- 
+siguiente _ = error "No existe un direccion siguiente  Oeste"
+
+-- La funion es parcial ya que no puede usarse con la totaliad de casos ados por el 
+-- tipo de dato rciido y dee de contemplarse precauciones en su uso.
+-- Dado esto, si, posee una preconicion.
+
+
 -- 2
 data DiaDeSemana = Lunes | Martes | Miercoles | Jueves | Viernes | Sabado | Domingo
      deriving Show
