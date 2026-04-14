@@ -10,9 +10,9 @@ longitud [] = 0
 longitud (x:xs) = 1 + longitud xs
 
 -- 1.c
-succesores :: [Int] -> [Int]
-succesores [] = []
-succesores (x:xs) = (x+1) : succesores xs
+sucesores :: [Int] -> [Int]
+sucesores [] = []
+sucesores (x:xs) = (x+1) : sucesores xs
 
 -- 1.d
 conjuncion :: [Bool] -> Bool
@@ -131,7 +131,7 @@ mayoresA x  (p:ps) = if ((edad p) > x)
 
 -- 1.b
 promedioEdad :: [Persona] -> Int
-promedioEdad ps = div (cantidadDeElementos ps) (sumatoriaDeEdades ps)
+promedioEdad ps = div (sumatoriaDeEdades ps) (cantidadDeElementos ps)
 
 -- 1.c
 --- Recursion con 3 casos....
