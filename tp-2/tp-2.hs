@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 -- RECURSION SOBRE LISTAS
+=======
+-- Recursion sobre listas 
+>>>>>>> 2bf4e68 (Hasta zip de maximos)
 -- 1.a
 sumatoria :: [Int] -> Int
 sumatoria [] = 0
@@ -10,9 +14,15 @@ longitud [] = 0
 longitud (x:xs) = 1 + longitud xs
 
 -- 1.c
+<<<<<<< HEAD
 sucesores :: [Int] -> [Int]
 sucesores [] = []
 sucesores (x:xs) = (x+1) : sucesores xs
+=======
+succesores :: [Int] -> [Int]
+succesores [] = []
+succesores (x:xs) = (x+1) : succesores xs
+>>>>>>> 2bf4e68 (Hasta zip de maximos)
 
 -- 1.d
 conjuncion :: [Bool] -> Bool
@@ -51,17 +61,27 @@ lasDeLongitudMayorA k (x:xs) = if length x > k then x : lasDeLongitudMayorA k xs
 
 -- 1.k 
 agregarAlFinal :: [a] -> a -> [a]
+<<<<<<< HEAD
 agregarAlFinal []   x = x:[]
 agregarAlFinal (a:as) x = a : agregarAlFinal as x
+=======
+agregarAlFinal []   x = x:[]  
+agregarAlFinal a:as _ = a ++ agregarAlFinal as
+>>>>>>> 2bf4e68 (Hasta zip de maximos)
 
 -- 1.m
 agregar :: [a] -> [a] -> [a]
 agregar [] xs = xs
+<<<<<<< HEAD
 agregar (a:as) xs = a : agregar as xs
+=======
+agregar a:as xs =  a:(agregar as xs)
+>>>>>>> 2bf4e68 (Hasta zip de maximos)
 
 -- 1.n
 reversa :: [a] -> [a]
 reversa [] = []
+<<<<<<< HEAD
 reversa (a:as) = agregarAlFinal (reversa as) a
 
 -- 1.l
@@ -314,3 +334,19 @@ asignaciones (p:ps) rs = (p, asignacionesDeProyecto p rs) : asignaciones ps rs
 asignacionesDeProyecto :: Proyecto -> [Rol] -> Int
 asignacionesDeProyecto _ []   = 0
 asignacionesDeProyecto p (r:rs) = unoSiCeroSino (estaAsignado r p) + asignacionesDeProyecto p rs
+=======
+reversa a:as = (reversa as) : a
+
+-- 1.l
+zipMaximos :: [Int] -> [Int] -> [Int]
+zipMaximos []   _    = 
+zipMaximos a:as []   =
+zipMaximos a:as x:xs = (max a x):(zipMaximos as xs)
+
+-- 1.o
+elMinimo :: Ord a => [a] -> a
+elMinimo xs = elPrimero (ordenar xs) 
+-- pensando...
+
+
+>>>>>>> 2bf4e68 (Hasta zip de maximos)
