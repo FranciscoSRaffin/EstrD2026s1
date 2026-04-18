@@ -72,9 +72,13 @@ zipMaximos (a:as) (x:xs) = max a x : zipMaximos as xs
 
 -- 1.o
 elMinimo :: Ord a => [a] -> a
-elMinimo [x]    = x
-elMinimo (x:xs) = if head xs > x then elMinimo (tail xs)
-                                  else elMinimo xs
+elMinimo []     = []
+elMinimo (x:xs) = insertar x xs
+
+insertar :: Ord a => a -> [a] -> [a] 
+insertar x []   = [x]
+insertar x y:ys = if (x > y) then y : (insertar x ys)
+                             else x : y : ys
 
 -- RECURSION SOBRE NUMEROS
 -- 2.a
@@ -94,16 +98,14 @@ repetir x y = if x > 1 then y : repetir (x-1) y else y:[]
 -- 2.d
 losPrimeros :: Int -> [a] -> [a]
 losPrimeros _ []     = []
-losPrimeros x (a:as) = if x == 0 then a : as
-                       else if x /= 1 then a : losPrimeros (x-1) as
-                                      else a : []
+losPrimeros 0 _      = []
+losPrimeros x (y:ys) = y : (losPrimeros (x-1) ys) 
 
 -- 2.e
 sinLosPrimeros :: Int -> [a] -> [a]
+sinLosPrimeros 0 ys     = ys
 sinLosPrimeros _ []     = [] 
-sinLosPrimeros x (a:as) = if x == 0 then a : as
-                                    else sinLosPrimeros (x-1) as
-
+sinLosPrimeros x (y:ys) = sinLosPrimeros (x-1) ys 
 
 -- REGISTROS
 -- 1
@@ -172,12 +174,10 @@ leGanaA (ConsPokemon Fuego _)  (ConsPokemon Planta _) = True
 leGanaA (ConsPokemon Planta _) (ConsPokemon Agua _)   = True
 leGanaA _            _            = False
 
--- B
 cantPokemonesDeEn :: TipoDePokemon -> [Pokemon] -> Int
 cantPokemonesDeEn _ []     = 0
 cantPokemonesDeEn t (p:ps) = unoSiCeroSino (sonMismoTipo (tipo p) t) + cantPokemonesDeEn t ps
 
--- c
 pokemonesDeTipo :: [Pokemon] -> TipoDePokemon -> [Pokemon]
 pokemonesDeTipo []   _   = []
 pokemonesDeTipo (p:ps) t = if sonMismoTipo (tipo p) t
@@ -185,15 +185,14 @@ pokemonesDeTipo (p:ps) t = if sonMismoTipo (tipo p) t
                            else pokemonesDeTipo ps t
 
 cantidadQueLeGanaATodos :: [Pokemon] -> [Pokemon] -> Int
-cantidadQueLeGanaATodos [] _    = 0
-cantidadQueLeGanaATodos _ []    = 1
+cantidadQueLeGanaATodos [] _      = 0
+cantidadQueLeGanaATodos ps  []     = cantidadDeElementos ps
 cantidadQueLeGanaATodos (p:ps) os = unoSiCeroSino (leGanaATodos p os) + cantidadQueLeGanaATodos ps os
 
 leGanaATodos :: Pokemon -> [Pokemon] -> Bool
 leGanaATodos _ []   = True 
 leGanaATodos p (o:os) = leGanaA p o && leGanaATodos p os
 
--- d
 todosLosTipos :: [TipoDePokemon]
 todosLosTipos = [Agua, Fuego, Planta]
 
@@ -311,13 +310,16 @@ estaAsignado r p = nombreProyecto (proyecto r) == nombreProyecto p
 
 -- 3.4
 asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
-asignadosPorProyecto (ConsEmpresa rs) = asignacionesRoles rs -- (proyectos e) (roles e)
-
+asignadosPorProyecto (ConsEmpresa rs) = asignacionesRoles rs
 
 asignacionesRoles :: [Rol] -> [(Proyecto, Int)]
-asignacionesRoles []   =
-asignacionesRoles r:rs = ((proyecto r), (lenght ) + 1)
+asignacionesRoles []     = []
+asignacionesRoles (r:rs) = agregar (proyecto r) (asignacionesRoles rs)
 
-asignacionesDeProyecto :: Proyecto -> [Rol] -> Int
-asignacionesDeProyecto _ []   = 0
-asignacionesDeProyecto p (r:rs) = unoSiCeroSino (estaAsignado r p) + asignacionesDeProyecto p rs
+agregar :: Proyecto -> [(Proyecto, Int)] -> [(Proyecto, Int)]
+agregar p []          = [(p,1)]
+agregar p ((p1,n):ps) = if (sonMismoProyecto p p1) then (p, n+1) : ps
+                                                   else (p1,n) : (agregar p ps)
+
+sonMismoProyecto :: Proyecto -> Proyecto -> Bool 
+sonMismoProyecto (ConsProyecto n1) (ConsProyecto n2) = n1 == n2
