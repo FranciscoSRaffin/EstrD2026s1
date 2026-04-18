@@ -139,14 +139,14 @@ mirrorT (NodeT a t1 t2) = (NodeT a (mirrorT t2) (mirrorT t1))
 
 -- 2.9 
 toList :: Tree a -> [a]
-toList EmptyT          = EmptyT 
-toList (NodeT a t1 t2) = (singularSi (not esEmptyT t1) (contenido t1)) ++ [a] ++ (singularSi (!esEmptyT t2) (contenido t2)) 
+toList EmptyT          = []
+toList (NodeT a t1 t2) = (singularSi (contenido t1) (not (esEmptyT t1))) ++ [a] ++ (singularSi (contenido t2) (not (esEmptyT t2))) 
 
 -- 2.10
 levelN :: Int-> Tree a -> [a]
 levelN _ EmptyT          = []
-levelN l (NodeT a t1 t2) = if (l == 0) then l : (levelN l t1) : (levelN l t2) : []
-                                           else (levelN l t1) : (levelN l t2)
+levelN 0 (NodeT a _ _ )  = a : []
+levelN l (NodeT _ t1 t2) = levelN (l-1) t1 ++ levelN (l-1) t2
 
 -- 2.11 
 listPerLevel :: Tree a -> [[a]]
@@ -154,6 +154,14 @@ listPerLevel EmptyT          = []
 listPerLevel (NodeT x t1 t2) = [x] : zipNodos (listPerLevel t1)  (listPerLevel t2) 
 
 zipNodos :: [[a]] -> [[a]] -> [[a]]
-zipNodos []    _   = []
-zipNodos _    []   = []
-zipNodos x:xs y:ys = x ++ y : zipNodos xs ys
+zipNodos []     yss        = yss
+zipNodos xss    []         = xss
+zipNodos (xs:xss) (ys:yss) = (xs ++ ys) : zipNodos xss yss
+
+-- 2.12
+ramaMasLarga :: Tree a -> [a]
+ramaMasLarga EmptyT          = []
+ramaMasLarga (NodeT x t1 t2) = x : if (heightT t1 > heightT t2)
+                                   then ramaMasLarga t1 
+                                   else ramaMasLarga t2
+
