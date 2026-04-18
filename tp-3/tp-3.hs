@@ -150,9 +150,10 @@ levelN l (NodeT a t1 t2) = if (l == 0) then l : (levelN l t1) : (levelN l t2) : 
 
 -- 2.11 
 listPerLevel :: Tree a -> [[a]]
-listPerLevel t = agruarNiveles (heightT t) t 
+listPerLevel EmptyT          = []
+listPerLevel (NodeT x t1 t2) = [x] : zipNodos (listPerLevel t1)  (listPerLevel t2) 
 
--- WIP
-agruparNiveles :: Int -> Tree a -> [[a]]
-agruparNiveles _ EmptyT         = [[]]
-agruparNiveles l (NodeT a t1 t2) = [[]]
+zipNodos :: [[a]] -> [[a]] -> [[a]]
+zipNodos []    _   = []
+zipNodos _    []   = []
+zipNodos x:xs y:ys = x ++ y : zipNodos xs ys
