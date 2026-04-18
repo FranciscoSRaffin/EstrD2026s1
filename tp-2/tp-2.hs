@@ -240,7 +240,7 @@ data Empresa = ConsEmpresa [Rol]
 
 -- 3.1 
 proyectos :: Empresa -> [Proyecto]
-proyectos (ConsEmpresa rs) = proyectosRoles rs
+proyectos (ConsEmpresa rs) = sinRepetidos (proyectosRoles rs)
 
 proyectosRoles :: [Rol] -> [Proyecto]
 proyectosRoles []     = []
@@ -252,6 +252,14 @@ proyecto (Developer _ p) = p
 
 roles :: Empresa -> [Rol]
 roles (ConsEmpresa rs) = rs
+
+sinRepetidos :: [Proyecto] -> [Proyecto]  
+sinRepetidos [] = []
+sinRepetidos p:ps = (singularSi (not apareceProyecto p ps) p) ++ sinRepetidos rs 
+
+apareceProyecto :: Proyecto -> [Proyecto] -> Bool
+apareceProyecto _  []   = False
+apareceProyecto p0 p:ps = (nombre p0 == nombre p) || apareceProyecto p0 ps
 
 -- 3.2
 losDevSenior :: Empresa -> [Proyecto] -> Int
@@ -303,13 +311,12 @@ estaAsignado r p = nombreProyecto (proyecto r) == nombreProyecto p
 
 -- 3.4
 asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
-asignadosPorProyecto e = asignaciones (proyectos e) (roles e)
+asignadosPorProyecto (ConsEmpresa rs) = asignacionesRoles rs -- (proyectos e) (roles e)
 
 
-asignaciones :: [Proyecto] -> [Rol] -> [(Proyecto, Int)]
-asignaciones [] _ = []
-asignaciones (p:ps) rs = (p, asignacionesDeProyecto p rs) : asignaciones ps rs
-
+asignacionesRoles :: [Rol] -> [(Proyecto, Int)]
+asignacionesRoles []   =
+asignacionesRoles r:rs = ((proyecto r), (lenght ) + 1)
 
 asignacionesDeProyecto :: Proyecto -> [Rol] -> Int
 asignacionesDeProyecto _ []   = 0
