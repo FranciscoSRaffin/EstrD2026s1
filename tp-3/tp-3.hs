@@ -49,7 +49,7 @@ esTesoro :: Objeto -> Bool
 esTesoro Tesoro = True
 esTesoro _      = False
 
--- 2.1
+-- 2.1.1
 hayTesoro :: Camino -> Bool
 hayTesoro (Cofre co ca) = (hayTesoroCofre co) || (hayTesoro ca)
 hayTesoro (Nada ca) =  hayTesoro ca
@@ -59,7 +59,7 @@ hayTesoroCofre :: [Objeto] -> Bool
 hayTesoroCofre []   = False
 hayTesoroCofre (o:os) = esTesoro o || hayTesoroCofre os
 
--- 2.2
+-- 2.1.2
 pasosHastaTesoro :: Camino -> Int
 pasosHastaTesoro (Nada ca) = 1 + pasosHastaTesoro ca
 pasosHastaTesoro (Cofre co ca) = if (hayTesoroCofre co)
@@ -67,13 +67,13 @@ pasosHastaTesoro (Cofre co ca) = if (hayTesoroCofre co)
     else 1 + pasosHastaTesoro ca
 pasosHastaTesoro _ = 0
 
--- 2.3
+-- 2.1.3
 hayTesoroEn :: Int -> Camino -> Bool
 hayTesoroEn p (Cofre co ca) = (p == 0 && hayTesoroCofre co) || hayTesoroEn (p-1) ca
 hayTesoroEn p (Nada ca)     = p > 0 && hayTesoroEn (p-1) ca
 hayTesoroEn _ _             = False
 
--- 2.4
+-- 2.1.4
 alMenosNTesoros :: Int -> Camino -> Bool
 alMenosNTesoros cant (Nada ca)     = cant == 0 || alMenosNTesoros cant ca  
 alMenosNTesoros cant (Cofre co ca) = (cant - cantidadDeTesoros co) <= 0 || (alMenosNTesoros (cant - cantidadDeTesoros co) ca) 
@@ -97,58 +97,58 @@ contenido :: Tree a -> a
 contenido EmptyT          = error "El arbol no puede ser vacio" 
 contenido (NodeT n t1 t2) = n 
 
--- 2.1
+-- 2.1.1
 sumarT :: Tree Int -> Int
 sumarT EmptyT          = 0
 sumarT (NodeT n t1 t2) = n + sumarT t1 + sumarT t2
 
--- 2.2
+-- 2.1.2
 sizeT :: Tree a -> Int
 sizeT EmptyT          = 0
 sizeT (NodeT _ t1 t2) = 1 + sizeT t1 + sizeT t2 
 
--- 2.3
+-- 2.1.3
 mapDobleT :: Tree Int -> Tree Int
 mapDobleT EmptyT          = EmptyT 
 mapDobleT (NodeT n t1 t2) = (NodeT (n*2) (mapDobleT t1) (mapDobleT t2))
 
--- 2.4
+-- 2.1.4
 perteneceT :: Eq a => a -> Tree a -> Bool
 perteneceT _ EmptyT          = False
 perteneceT a (NodeT b t1 t2) = (a == b) || (perteneceT a t1) || (perteneceT a t2) 
 
--- 2.5
+-- 2.1.5
 aparicionesT :: Eq a => a-> Tree a-> Int
 aparicionesT _ EmptyT          = 0
 aparicionesT a (NodeT b t1 t2) = unoSiCeroSino (a == b) + aparicionesT a t1 + aparicionesT a t2
 
--- 2.6
+-- 2.1.6
 leaves :: Tree a -> [a]
 leaves EmptyT          = []
 leaves (NodeT b t1 t2) = (singularSi b (esEmptyT t1 && esEmptyT t2)) ++ leaves t1 ++ leaves t2
 
--- 2.7 
+-- 2.1.7 
 heightT :: Tree a -> Int
 heightT EmptyT          = 0
 heightT (NodeT _ t1 t2) = max (length (leaves t1)) (length (leaves t2))
 
--- 2.8 
+-- 2.1.8 
 mirrorT :: Tree a -> Tree a
 mirrorT EmptyT          = EmptyT
 mirrorT (NodeT a t1 t2) = (NodeT a (mirrorT t2) (mirrorT t1))
 
--- 2.9 
+-- 2.1.9 
 toList :: Tree a -> [a]
 toList EmptyT          = []
 toList (NodeT a t1 t2) = (singularSi (contenido t1) (not (esEmptyT t1))) ++ [a] ++ (singularSi (contenido t2) (not (esEmptyT t2))) 
 
--- 2.10
+-- 2.1.10
 levelN :: Int-> Tree a -> [a]
 levelN _ EmptyT          = []
 levelN 0 (NodeT a _ _ )  = a : []
 levelN l (NodeT _ t1 t2) = levelN (l-1) t1 ++ levelN (l-1) t2
 
--- 2.11 
+-- 2.1.11 
 listPerLevel :: Tree a -> [[a]]
 listPerLevel EmptyT          = []
 listPerLevel (NodeT x t1 t2) = [x] : zipNodos (listPerLevel t1)  (listPerLevel t2) 
@@ -158,10 +158,37 @@ zipNodos []     yss        = yss
 zipNodos xss    []         = xss
 zipNodos (xs:xss) (ys:yss) = (xs ++ ys) : zipNodos xss yss
 
--- 2.12
+-- 2.1.12
 ramaMasLarga :: Tree a -> [a]
 ramaMasLarga EmptyT          = []
 ramaMasLarga (NodeT x t1 t2) = x : if (heightT t1 > heightT t2)
                                    then ramaMasLarga t1 
                                    else ramaMasLarga t2
 
+-- 2.1.13
+todosLosCaminos :: Tree a -> [[a]]
+todosLosCaminos EmptyT          = []
+todosLosCaminos (NodeT x t1 t2) = (consACada x (todosLosCaminos t1)) ++ (consACada x (todosLosCaminos t2))
+
+consACada :: a -> [[a]] -> [[a]]
+consACada y []       = [y:[]]
+consACada y (xs:xss) = (y:xs):(consACada y xss)
+
+-- 2.2 
+-- Expresiones Aritméticas
+
+data ExpA = Valor Int
+          | Sum ExpA ExpA
+          | Prod ExpA ExpA
+          | Neg ExpA
+
+-- 2.2.1
+eval :: ExpA -> Int
+eval (Valor n)    = n
+eval (Sum e1 e2)  = (eval e1) + (eval e2)
+eval (Prod e1 e2) = (eval e1) * (eval e2)
+eval (Neg e)      = - (eval e)
+
+-- 2.2.2 PREGUNTAR EN CLASE
+simplificar :: ExpA -> ExpA
+simplificar e = e 
