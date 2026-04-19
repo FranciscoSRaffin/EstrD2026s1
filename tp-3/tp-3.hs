@@ -199,15 +199,15 @@ simplificar e = e
 simplificarSum :: Int -> Int -> ExpA
 simplificarSum 0 y = (Valor y) 
 simplificarSum x 0 = (Valor x)
-simplificarSum x y = (Sum x y)
+simplificarSum x y = (Sum (Valor x) (Valor y))
 
 simplificarProd :: Int -> Int -> ExpA
 simplificarProd 0 _ = (Valor 0)
 simplificarProd _ 0 = (Valor 0)
 simplificarProd 1 y = (Valor y)
-simplificarProd x 1 = (Valor y)
-simplificarProd x y = (Prod x y)
+simplificarProd x 1 = (Valor x)
+simplificarProd x y = (Prod (Valor x) (Valor y))
 
-simplificarNeg :: Int -> ExpA
+simplificarNeg :: ExpA -> ExpA
 simplificarNeg (Neg x) = x
 simplificarNeg e       = e
