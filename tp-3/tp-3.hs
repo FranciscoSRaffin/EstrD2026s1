@@ -189,6 +189,25 @@ eval (Sum e1 e2)  = (eval e1) + (eval e2)
 eval (Prod e1 e2) = (eval e1) * (eval e2)
 eval (Neg e)      = - (eval e)
 
--- 2.2.2 PREGUNTAR EN CLASE
+-- 2.2.2
 simplificar :: ExpA -> ExpA
-simplificar e = e 
+simplificar (Sum e1 e2)  = simplificarSum (eval e1) (eval e2)
+simplificar (Prod e1 e2) = simplificarProd (eval e1) (eval e2)
+simplificar (Neg e)      = simplificarNeg e
+simplificar e = e
+
+simplificarSum :: Int -> Int -> ExpA
+simplificarSum 0 y = (Valor y) 
+simplificarSum x 0 = (Valor x)
+simplificarSum x y = (Sum x y)
+
+simplificarProd :: Int -> Int -> ExpA
+simplificarProd 0 _ = (Valor 0)
+simplificarProd _ 0 = (Valor 0)
+simplificarProd 1 y = (Valor y)
+simplificarProd x 1 = (Valor y)
+simplificarProd x y = (Prod x y)
+
+simplificarNeg :: Int -> ExpA
+simplificarNeg (Neg x) = x
+simplificarNeg e       = e
