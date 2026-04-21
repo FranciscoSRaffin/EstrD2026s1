@@ -130,7 +130,7 @@ leaves (NodeT b t1 t2) = (singularSi b (esEmptyT t1 && esEmptyT t2)) ++ leaves t
 -- 2.1.7 
 heightT :: Tree a -> Int
 heightT EmptyT          = 0
-heightT (NodeT _ t1 t2) = max (length (leaves t1)) (length (leaves t2))
+heightT (NodeT _ t1 t2) = 1 + max (heightT t1) (heightT t2)
 
 -- 2.1.8 
 mirrorT :: Tree a -> Tree a
