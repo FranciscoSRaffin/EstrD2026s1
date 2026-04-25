@@ -172,3 +172,133 @@ type SectorId = String
 type Tripulante = String
 data Tree a = EmptyT | NodeT a (Tree a) (Tree a)
 data Nave = N (Tree Sector)
+
+sectorId :: Sector -> SectorId
+sectorId (S id _ _) = id
+
+componentesDeSector :: Sector -> [Componente]
+componentesDeSector (S _ componentes _) = componentes
+
+componentesDeSectores :: (Tree Sector) -> [Componente]
+componentesDeSectores EmptyT               = [] 
+componentesDeSectores (NodeT sect izq der) = componentesDeSector sect ++ componentesDeSectores izq ++ componentesDeSectores der
+
+barrilesDeComponentes :: [Componente] -> [Barril]
+barrilesDeComponentes []     = []
+barrilesDeComponentes (c:cs) = (barrilesDeComponente c) ++ barrilesDeComponentes cs
+
+barrilesDeComponente :: Componente -> [Barril]
+barrilesDeComponente (Almacen barriles) = barriles
+barrilesDeComponente _                  = []
+
+-- 3.1
+sectores :: Nave -> [SectorId]
+sectores (N sectores) = idDeSectores sectores
+
+idDeSectores :: (Tree Sector) -> [SectorId]
+idDeSectores EmptyT               = []
+idDeSectores (NodeT sect izq der) = sectorId sect : (idDeSectores izq ++ idDeSectores der)
+
+-- 3.2
+poderDePropulsion :: Nave -> Int
+poderDePropulsion (N sectores) = poderDePropulsionSectores sectores
+
+poderDePropulsionSectores :: (Tree Sector) -> Int
+poderDePropulsionSectores EmptyT               = 0
+poderDePropulsionSectores (NodeT sect izq der) = poderDePropulsionSector sect + poderDePropulsionSectores izq + poderDePropulsionSectores der
+
+poderDePropulsionSector :: Sector -> Int
+poderDePropulsionSector (S _ componentes _) = poderDePropulsionComponentes componentes
+
+poderDePropulsionComponentes :: [Componente] -> Int
+poderDePropulsionComponentes []     = 0
+poderDePropulsionComponentes (c:cs) = poderDePropulsionComponente c + poderDePropulsionComponentes cs
+
+poderDePropulsionComponente :: Componente -> Int
+poderDePropulsionComponente (Motor poder) = poder
+poderDePropulsionComponente _             = 0
+
+-- 3.3
+barriles :: Nave -> [Barril]
+barriles (N sectores) = barrilesDeComponentes (componentesDeSectores sectores)
+
+-- 3.4
+agregarASector :: [Componente] -> SectorId -> Nave -> Nave
+agregarASector cs sId (N sectoresT) = (N (agregarASectorEnSectoresT cs sId sectoresT))
+
+agregarASectorEnSectoresT :: [Componente] -> SectorId -> (Tree Sector) -> (Tree Sector)
+agregarASectorEnSectoresT _  _   EmptyT               = EmptyT
+agregarASectorEnSectoresT cs sId (NodeT sect izq der) = if ((sectorId sect) == sId)
+                                                           then (NodeT (agregarASectorEnSector cs sect) izq der) 
+                                                           else (NodeT sect (agregarASectorEnSectoresT cs sId izq)
+                                                                            (agregarASectorEnSectoresT cs sId der)
+                                                                )
+
+agregarASectorEnSector :: [Componente] -> Sector -> Sector
+agregarASectorEnSector cs (S id ys ts) = (S id (cs ++ ys) ts) 
+
+-- 3.5
+asignarTripulanteA :: Tripulante -> [SectorId] -> Nave -> Nave
+asignarTripulanteA t sids (N sectoresT) = (N (asignarTripulanteASectores t sids sectoresT))
+
+asignarTripulanteASectores :: Tripulante -> [SectorId] -> (Tree Sector) -> (Tree Sector)
+asignarTripulanteASectores _ _    EmptyT               = EmptyT 
+asignarTripulanteASectores t sids (NodeT sect izq der) = 
+    (NodeT (asignarTripulanteASectorDentroDeIds t sids sect) 
+           (asignarTripulanteASectores t sids izq)
+           (asignarTripulanteASectores t sids der)
+    ) 
+
+asignarTripulanteASectorDentroDeIds :: Tripulante -> [SectorId] -> Sector -> Sector
+asignarTripulanteASectorDentroDeIds _ []       sect = sect
+asignarTripulanteASectorDentroDeIds t (si:sis) sect = if ((sectorId sect) == si)
+                                                           then asignarTripulanteASector t sect
+                                                           else asignarTripulanteASectorDentroDeIds t sis sect
+
+asignarTripulanteASector :: Tripulante -> Sector -> Sector
+asignarTripulanteASector t (S id cs ts) = (S id cs (t:ts))
+
+-- 3.6
+sectoresAsignados :: Tripulante -> Nave -> [SectorId]
+sectoresAsignados t (N sectoresT) = sectoresAsignadosEnT t sectoresT
+
+sectoresAsignadosEnT :: Tripulante -> (Tree Sector) -> [SectorId]
+sectoresAsignadosEnT _ EmptyT               = []
+sectoresAsignadosEnT t (NodeT sect izq der) = (singularSi (sectorId sect) (estaAsignadoEnSector t sect)) ++ sectoresAsignadosEnT t izq ++ sectoresAsignadosEnT t der
+
+estaAsignadoEnSector :: Tripulante -> Sector -> Bool
+estaAsignadoEnSector t (S _ _ ts) = perteneceTripulante t ts
+
+perteneceTripulante :: Tripulante -> [Tripulante] -> Bool
+perteneceTripulante _    []     = False
+perteneceTripulante trip (t:ts) = (trip == t) || perteneceTripulante trip ts
+
+-- 3.7 
+tripulantes :: Nave -> [Tripulante]
+tripulantes (N sectoresT) = sinRepeticiones (tripulantesDeSectoresT sectoresT)
+
+tripulantesDeSectoresT :: (Tree Sector) -> [Tripulante]
+tripulantesDeSectoresT EmptyT               = []
+tripulantesDeSectoresT (NodeT sect izq der) = tripulantesDeSector sect ++ tripulantesDeSectoresT izq ++ tripulantesDeSectoresT der
+
+tripulantesDeSector :: Sector -> [Tripulante]
+tripulantesDeSector (S _ _ ts) = ts
+
+sinRepeticiones :: Eq a => [a] -> [a]
+sinRepeticiones []     = []
+sinRepeticiones (x:xs) = if (pertenece x xs) then sinRepeticiones xs
+                                             else x:(sinRepeticiones xs)
+
+pertenece :: Eq a => a -> [a] -> Bool
+pertenece _ [] = False
+pertenece x (y:ys) = x == y || pertenece x ys
+
+-- 4 Manada de lobos 
+
+type Presa = String-- nombre de presa
+type Territorio = String-- nombre de territorio
+type Nombre = String-- nombre de lobo
+data Lobo = Cazador Nombre [Presa] Lobo Lobo Lobo
+          | Explorador Nombre [Territorio] Lobo Lobo
+          | Cría Nombre
+data Manada = M Lobo
