@@ -1,3 +1,7 @@
+singularSi :: a -> Bool -> [a]
+singularSi x True  = x:[]
+singularSi x False = []
+
 -- RECURSION SOBRE LISTAS
 -- 1.a
 sumatoria :: [Int] -> Int
@@ -72,13 +76,19 @@ zipMaximos (a:as) (x:xs) = max a x : zipMaximos as xs
 
 -- 1.o
 elMinimo :: Ord a => [a] -> a
-elMinimo []     = []
-elMinimo (x:xs) = insertar x xs
+elMinimo xs = elPrimero (ordenar xs)
+
+ordenar :: Ord a => [a] -> [a] 
+ordenar []     = []
+ordenar (x:xs) = insertar x (ordenar xs)
 
 insertar :: Ord a => a -> [a] -> [a] 
-insertar x []   = [x]
-insertar x y:ys = if (x > y) then y : (insertar x ys)
+insertar x []     = [x]
+insertar x (y:ys) = if (x > y) then y : (insertar x ys)
                              else x : y : ys
+
+elPrimero :: [a] -> a
+elPrimero (x:_) = x
 
 -- RECURSION SOBRE NUMEROS
 -- 2.a
@@ -237,6 +247,9 @@ data Proyecto = ConsProyecto String
 data Rol = Developer Seniority Proyecto | Management Seniority Proyecto
 data Empresa = ConsEmpresa [Rol]
 
+nombre :: Proyecto -> String
+nombre (ConsProyecto n) = n
+
 -- 3.1 
 proyectos :: Empresa -> [Proyecto]
 proyectos (ConsEmpresa rs) = sinRepetidos (proyectosRoles rs)
@@ -254,11 +267,11 @@ roles (ConsEmpresa rs) = rs
 
 sinRepetidos :: [Proyecto] -> [Proyecto]  
 sinRepetidos [] = []
-sinRepetidos p:ps = (singularSi (not apareceProyecto p ps) p) ++ sinRepetidos rs 
+sinRepetidos (p:ps) = (singularSi (not apareceProyecto p ps) p) ++ sinRepetidos ps 
 
 apareceProyecto :: Proyecto -> [Proyecto] -> Bool
 apareceProyecto _  []   = False
-apareceProyecto p0 p:ps = (nombre p0 == nombre p) || apareceProyecto p0 ps
+apareceProyecto p0 (p:ps) = (nombre p0 == nombre p) || apareceProyecto p0 ps
 
 -- 3.2
 losDevSenior :: Empresa -> [Proyecto] -> Int
@@ -314,12 +327,12 @@ asignadosPorProyecto (ConsEmpresa rs) = asignacionesRoles rs
 
 asignacionesRoles :: [Rol] -> [(Proyecto, Int)]
 asignacionesRoles []     = []
-asignacionesRoles (r:rs) = agregar (proyecto r) (asignacionesRoles rs)
+asignacionesRoles (r:rs) = agregarP  (proyecto r) (asignacionesRoles rs)
 
-agregar :: Proyecto -> [(Proyecto, Int)] -> [(Proyecto, Int)]
-agregar p []          = [(p,1)]
-agregar p ((p1,n):ps) = if (sonMismoProyecto p p1) then (p, n+1) : ps
-                                                   else (p1,n) : (agregar p ps)
+agregarP     :: Proyecto -> [(Proyecto, Int)] -> [(Proyecto, Int)]
+agregarP     p []          = [(p,1)]
+agregarP     p ((p1,n):ps) = if (sonMismoProyecto p p1) then (p, n+1) : ps
+                                                   else (p1,n) : (agregarP   p ps)
 
 sonMismoProyecto :: Proyecto -> Proyecto -> Bool 
 sonMismoProyecto (ConsProyecto n1) (ConsProyecto n2) = n1 == n2
