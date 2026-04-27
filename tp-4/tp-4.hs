@@ -152,11 +152,6 @@ filtrarTesoros :: [Objeto] -> [Objeto]
 filtrarTesoros []     = []
 filtrarTesoros (o:os) = (singularSi o (esTesoro o)) ++ filtrarTesoros os
 
-singularSi :: a -> Bool -> [a]
-singularSi x True  = x:[]
-singularSi x False = []
-
-
 -- 2.6
 todosLosCaminos :: Mapa -> [[Dir]]
 todosLosCaminos (Fin _)             = []
@@ -295,10 +290,156 @@ pertenece x (y:ys) = x == y || pertenece x ys
 
 -- 4 Manada de lobos 
 
-type Presa = String-- nombre de presa
-type Territorio = String-- nombre de territorio
-type Nombre = String-- nombre de lobo
+type Presa = String -- nombre de presa
+type Territorio = String -- nombre de territorio
+type Nombre = String -- nombre de lobo
 data Lobo = Cazador Nombre [Presa] Lobo Lobo Lobo
           | Explorador Nombre [Territorio] Lobo Lobo
-          | Cría Nombre
+          | Cria Nombre
 data Manada = M Lobo
+
+-- 3.1
+manada = (M (Cazador "Jhonny Sack" ["Gato", "Pez"] 
+              (Explorador "Vito" ["Bosque Lorem", "Bosque Ipsum"] (Cria "Anthony Jr") (Cria "Tony")) 
+              (Explorador "Furio" ["Bosque Lorem", "Colina Helada"] (Cria "Christopher") (Cria "Carmela"))
+              (Cria "Jackie Aprile")
+            )
+        )
+
+-- 3.2 --dada una manada, indica si la cantidad de alimento cazado es mayor a la cantidad de crías.
+buenaCaza :: Manada -> Bool
+buenaCaza (M l) =  (cantidadDeAlimentoCazado l) > (cantidadDeCrias l)
+
+cantidadDeAlimentoCazado :: Lobo -> Int
+cantidadDeAlimentoCazado (Cazador _ ps l1 l2 l3) = (cantidadDeElementos ps) + (cantidadDeAlimentoCazado l1) + (cantidadDeAlimentoCazado l2) + (cantidadDeAlimentoCazado l3)   
+cantidadDeAlimentoCazado (Explorador _ _ l1 l2)  = (cantidadDeAlimentoCazado l1) + (cantidadDeAlimentoCazado l2)
+cantidadDeAlimentoCazado _                       = 0
+
+cantidadDeCrias :: Lobo -> Int
+cantidadDeCrias (Cazador _ _ l1 l2 l3) = (cantidadDeCrias l1) + (cantidadDeCrias l2) + (cantidadDeCrias l3)
+cantidadDeCrias (Explorador _ _ l1 l2) = (cantidadDeCrias l1) + (cantidadDeCrias l2)
+cantidadDeCrias _                      = 1
+
+
+-- 3.3
+-- dada una manada, devuelve el nombre del lobo con más presas cazadas, junto
+-- con su cantidad de presas. Nota: se considera que los exploradores y crías tienen cero presas
+-- cazadas, y que podrían formar parte del resultado si es que no existen cazadores con más de
+-- cero presas.
+elAlfa :: Manada -> (Nombre, Int)
+elAlfa (M l) = elAlfaLobo l
+
+elAlfaLobo :: Lobo -> (Nombre, Int)
+elAlfaLobo (Cazador n ps l1 l2 l3) = elPrimero (ordenarPorMasAlfa [
+        (n, cantidadDeElementos ps),
+        elAlfaLobo l1,
+        elAlfaLobo l2,
+        elAlfaLobo l3
+    ])
+elAlfaLobo (Explorador n _ l1 l2) = elPrimero (ordenarPorMasAlfa [
+        elAlfaLobo l1,
+        elAlfaLobo l2
+    ])
+elAlfaLobo (Cria n) = (n, 0)
+
+ordenarPorMasAlfa :: [(Nombre, Int)] -> [(Nombre, Int)]
+ordenarPorMasAlfa []   = []
+ordenarPorMasAlfa (x:xs) = insertarLobo x (ordenarPorMasAlfa xs)
+
+insertarLobo :: (Nombre, Int) -> [(Nombre, Int)] -> [(Nombre, Int)]
+insertarLobo l     []     = l:[]
+insertarLobo (n,p) (l:ls) = if p > (segundoElemento l) then (n,p):l:ls
+                                                   else l:(insertarLobo (n,p) ls)
+
+segundoElemento :: (x,y) -> y
+segundoElemento (_,z) = z
+
+-- 3.4
+-- dado un territorio y una manada, devuelve los nombres de los exploradores que
+-- pasaron por dicho territorio.
+losQueExploraron :: Territorio -> Manada-> [Nombre]
+losQueExploraron t (M l) = losQueExploraronLobo t l
+
+losQueExploraronLobo :: Territorio -> Lobo -> [Nombre]
+losQueExploraronLobo t (Explorador n ts l1 l2) = (singularSi n (contieneTerritorio t ts) ) ++ losQueExploraronLobo t l1 ++ losQueExploraronLobo t l2
+losQueExploraronLobo t (Cazador _ _ l1 l2 l3)  = losQueExploraronLobo t l1 ++ losQueExploraronLobo t l2 ++ losQueExploraronLobo t l3
+losQueExploraronLobo _ _                       = []
+
+singularSi :: a -> Bool -> [a]
+singularSi x True  = x:[]
+singularSi x False = []
+
+contieneTerritorio :: Territorio -> [Territorio] -> Bool
+contieneTerritorio _   []     = False
+contieneTerritorio ter (t:ts) = (ter == t) || contieneTerritorio ter ts
+
+
+-- 3.5
+-- dada una manada, denota la lista de los pares cuyo primer elemento es un terri
+-- torio y cuyo segundo elemento es la lista de los nombres de los exploradores que exploraron
+-- dicho territorio. Los territorios no deben repetirse.
+exploradoresPorTerritorio :: Manada -> [(Territorio, [Nombre])]
+exploradoresPorTerritorio (M l) = exploradoresPorTerritorioLobo l
+
+exploradoresPorTerritorioLobo :: Lobo -> [(Territorio, [Nombre])]
+exploradoresPorTerritorioLobo (Explorador n ts l1 l2) = juntarExploraciones ((asignarTerritoriosALobo n ts) ++ exploradoresPorTerritorioLobo l1 ++ exploradoresPorTerritorioLobo l2)
+exploradoresPorTerritorioLobo (Cazador _ _ l1 l2 l3)  = juntarExploraciones (exploradoresPorTerritorioLobo l1 ++ exploradoresPorTerritorioLobo l2 ++ exploradoresPorTerritorioLobo l3)
+exploradoresPorTerritorioLobo _                       = []
+
+asignarTerritoriosALobo :: Nombre -> [Territorio] -> [(Territorio, [Nombre])] 
+asignarTerritoriosALobo n []     = []
+asignarTerritoriosALobo n (t:ts) = (t,n:[]) : asignarTerritoriosALobo n ts
+
+juntarExploraciones :: [(Territorio, [Nombre])] -> [(Territorio, [Nombre])]
+juntarExploraciones []     = []
+juntarExploraciones (e:es) = insertarExploraciones e (juntarExploraciones es)
+
+insertarExploraciones :: (Territorio, [Nombre]) -> [(Territorio, [Nombre])] -> [(Territorio, [Nombre])]
+insertarExploraciones l      []     = l:[]
+insertarExploraciones (t,ns) (e:es) = if (t == primerElemento e) then insertarExploraciones (t, ns ++ segundoElemento e) es else (t,ns) : insertarExploraciones e es
+
+primerElemento :: (x,y) -> x
+primerElemento (z,_) = z
+
+-- 3.6
+-- dado el nombre de un lobo y una manada, indica el nombre de todos los cazadores
+-- que tienen como subordinado al lobo dado (puede ser un subordinado directo, o el
+-- subordinado de un subordinado).
+-- Precondición: hay un lobo con dicho nombre y es único.
+
+-- cazadoresSuperioresDe :: Nombre -> Manada -> [Nombre]
+-- cazadoresSuperioresDe nombre (M lobo) = cazadoresSuperioresDeLobo nombre lobo 
+-- 
+-- cazadoresSuperioresDeLobo :: Nombre -> Lobo -> [Nombre]
+-- cazadoresSuperioresDeLobo n l = superioresDe n (todasLasSubordinaciones l n)
+-- 
+-- todasLasSubordinaciones :: Lobo -> Nombre -> [[Nombre]]
+-- todasLasSubordinaciones (Explorador nomLobo ts l1 l2) nomParam = (todasLasSubordinaciones l1) ++ (todasLasSubordinaciones l2)
+-- todasLasSubordinaciones (Cazador nomLobo t l1 l2 l3)  nomParam = (consACada nomLobo (todasLasSubordinaciones l1)) ++ (consACada nomLobo (todasLasSubordinaciones l2)) ++ (consACada nomLobo (todasLasSubordinaciones l3))
+-- todasLasSubordinaciones (Cria n)                      nomParam = [[]]
+-- 
+-- 
+-- consACadaMaybe :: a -> [[a]] -> [[a]]
+-- consACadaMaybe y []       = [y:[]]
+-- consACadaMaybe y (xs:xss) = (y:xs):(consACada y xss)
+
+-- cazadoresSuperioresDeLobo :: Nombre -> Lobo -> [Nombre]
+-- cazadoresSuperioresDeLobo n        (Explorador nomLobo ts l1 l2) = cazadoresSuperioresDeLobo n l1 ++ cazadoresSuperioresDeLobo n l2
+-- cazadoresSuperioresDeLobo nomParam (Cazador nomCaz t l1 l2 l3)   =  
+-- cazadoresSuperioresDeLobo n        (Cria n)                             =
+
+
+--
+--    
+--                A
+--         B             C 
+--    D       E      F       G
+--  H  I    J   K  L   M   N   Z
+--    
+--    
+--    
+--    
+--    
+--    
+--    
+--    

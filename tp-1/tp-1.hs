@@ -110,8 +110,6 @@ oBien :: Bool-> Bool-> Bool
 oBien True _ = True
 oBien _ b = b
 
-
-
 -- REGISTROS
 
 -- 1

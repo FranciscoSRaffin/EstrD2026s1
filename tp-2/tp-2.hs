@@ -329,10 +329,9 @@ asignacionesRoles :: [Rol] -> [(Proyecto, Int)]
 asignacionesRoles []     = []
 asignacionesRoles (r:rs) = agregarP  (proyecto r) (asignacionesRoles rs)
 
-agregarP     :: Proyecto -> [(Proyecto, Int)] -> [(Proyecto, Int)]
-agregarP     p []          = [(p,1)]
-agregarP     p ((p1,n):ps) = if (sonMismoProyecto p p1) then (p, n+1) : ps
-                                                   else (p1,n) : (agregarP   p ps)
+agregarP :: Proyecto -> [(Proyecto, Int)] -> [(Proyecto, Int)]
+agregarP p []          = [(p,1)]
+agregarP p ((p1,n):ps) = if (sonMismoProyecto p p1) then (p, n+1) : ps
 
 sonMismoProyecto :: Proyecto -> Proyecto -> Bool 
 sonMismoProyecto (ConsProyecto n1) (ConsProyecto n2) = n1 == n2
