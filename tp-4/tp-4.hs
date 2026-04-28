@@ -283,11 +283,6 @@ sinRepeticiones :: Eq a => [a] -> [a]
 sinRepeticiones []     = []
 sinRepeticiones (x:xs) = if (pertenece x xs) then sinRepeticiones xs
                                              else x:(sinRepeticiones xs)
-
-pertenece :: Eq a => a -> [a] -> Bool
-pertenece _ [] = False
-pertenece x (y:ys) = x == y || pertenece x ys
-
 -- 4 Manada de lobos 
 
 type Presa = String -- nombre de presa
@@ -406,40 +401,24 @@ primerElemento (z,_) = z
 -- que tienen como subordinado al lobo dado (puede ser un subordinado directo, o el
 -- subordinado de un subordinado).
 -- Precondición: hay un lobo con dicho nombre y es único.
+cazadoresSuperioresDe :: Nombre -> Manada -> [Nombre]
+cazadoresSuperioresDe nombre (M lobo) = cazadoresSuperioresDeLobo lobo nombre 
 
--- cazadoresSuperioresDe :: Nombre -> Manada -> [Nombre]
--- cazadoresSuperioresDe nombre (M lobo) = cazadoresSuperioresDeLobo nombre lobo 
--- 
--- cazadoresSuperioresDeLobo :: Nombre -> Lobo -> [Nombre]
--- cazadoresSuperioresDeLobo n l = superioresDe n (todasLasSubordinaciones l n)
--- 
--- todasLasSubordinaciones :: Lobo -> Nombre -> [[Nombre]]
--- todasLasSubordinaciones (Explorador nomLobo ts l1 l2) nomParam = (todasLasSubordinaciones l1) ++ (todasLasSubordinaciones l2)
--- todasLasSubordinaciones (Cazador nomLobo t l1 l2 l3)  nomParam = (consACada nomLobo (todasLasSubordinaciones l1)) ++ (consACada nomLobo (todasLasSubordinaciones l2)) ++ (consACada nomLobo (todasLasSubordinaciones l3))
--- todasLasSubordinaciones (Cria n)                      nomParam = [[]]
--- 
--- 
--- consACadaMaybe :: a -> [[a]] -> [[a]]
--- consACadaMaybe y []       = [y:[]]
--- consACadaMaybe y (xs:xss) = (y:xs):(consACada y xss)
-
--- cazadoresSuperioresDeLobo :: Nombre -> Lobo -> [Nombre]
--- cazadoresSuperioresDeLobo n        (Explorador nomLobo ts l1 l2) = cazadoresSuperioresDeLobo n l1 ++ cazadoresSuperioresDeLobo n l2
--- cazadoresSuperioresDeLobo nomParam (Cazador nomCaz t l1 l2 l3)   =  
--- cazadoresSuperioresDeLobo n        (Cria n)                             =
+cazadoresSuperioresDeLobo :: Lobo -> Nombre -> [Nombre]
+cazadoresSuperioresDeLobo (Explorador nomLobo _ l1 l2) nomParam = nomLobo : 
+                (sinElementoONill nomParam (cazadoresSuperioresDeLobo l1 nomParam) ++ sinElementoONill nomParam (cazadoresSuperioresDeLobo l2 nomParam))
+cazadoresSuperioresDeLobo (Cazador nomLobo t l1 l2 l3) nomParam = singularSi nomLobo (nomParam == nomLobo) ++ (sinElementoONill nomParam (cazadoresSuperioresDeLobo l1 nomParam) ++ sinElementoONill nomParam (cazadoresSuperioresDeLobo l2 nomParam))
+cazadoresSuperioresDeLobo (Cria nomLobo)               nomParam = singularSi nomLobo (nomParam == nomLobo)
 
 
---
---    
---                A
---         B             C 
---    D       E      F       G
---  H  I    J   K  L   M   N   Z
---    
---    
---    
---    
---    
---    
---    
---    
+-- Devuelve la lista sin el elemnto dado y en caso de no contenerlo, devuelve la lista vacia 
+sinElementoONill :: Eq a => a -> [a] -> [a]
+sinElementoONill x xs = if (not (pertenece x xs)) then [] else sinElemento x xs 
+
+pertenece :: Eq a => a -> [a] -> Bool
+pertenece _ [] = False
+pertenece x (y:ys) = x == y || pertenece x ys
+
+sinElemento :: Eq a => a -> [a] -> [a] 
+sinElemento _ []     = []
+sinElemento x (y:ys) = if (x == y) then ys else y:(sinElemento x ys)
