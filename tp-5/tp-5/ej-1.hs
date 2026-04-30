@@ -59,3 +59,5 @@ sacar n (x:xs) = if n == x then xs else x : sacar n xs
 ordenar :: Ord a => [a] -> [a]  -- > O(n²) <Cuadratico> -> <n> es el largo de la lista
 ordenar [] = []
 orderar xs = let m = minimo xs in m : ordenar (sacar m xs)
+
+
