@@ -266,11 +266,11 @@ roles :: Empresa -> [Rol]
 roles (ConsEmpresa rs) = rs
 
 sinRepetidos :: [Proyecto] -> [Proyecto]  
-sinRepetidos [] = []
-sinRepetidos (p:ps) = (singularSi (not apareceProyecto p ps) p) ++ sinRepetidos ps 
+sinRepetidos []     = []
+sinRepetidos (p:ps) = (singularSi p (not (apareceProyecto p ps))) ++ sinRepetidos ps 
 
 apareceProyecto :: Proyecto -> [Proyecto] -> Bool
-apareceProyecto _  []   = False
+apareceProyecto _  []     = False
 apareceProyecto p0 (p:ps) = (nombre p0 == nombre p) || apareceProyecto p0 ps
 
 -- 3.2
@@ -327,11 +327,13 @@ asignadosPorProyecto (ConsEmpresa rs) = asignacionesRoles rs
 
 asignacionesRoles :: [Rol] -> [(Proyecto, Int)]
 asignacionesRoles []     = []
-asignacionesRoles (r:rs) = agregarP  (proyecto r) (asignacionesRoles rs)
+asignacionesRoles (r:rs) = agregarP (proyecto r) (asignacionesRoles rs)
 
 agregarP :: Proyecto -> [(Proyecto, Int)] -> [(Proyecto, Int)]
 agregarP p []          = [(p,1)]
-agregarP p ((p1,n):ps) = if (sonMismoProyecto p p1) then (p, n+1) : ps
+agregarP p ((p1,n):ps) = if (sonMismoProyecto p p1)
+                            then (p, n+1) : ps 
+                            else agregarP p ps
 
 sonMismoProyecto :: Proyecto -> Proyecto -> Bool 
 sonMismoProyecto (ConsProyecto n1) (ConsProyecto n2) = n1 == n2
