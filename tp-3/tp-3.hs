@@ -83,6 +83,27 @@ cantidadDeTesoros :: [Objeto] -> Int
 cantidadDeTesoros []   = 0
 cantidadDeTesoros (o:os) = unoSiCeroSino(esTesoro o) + cantidadDeTesoros os
 
+-- 2.1.5
+cantTesorosEntre :: Int -> Int -> Camino -> Int
+cantTesorosEntre _ _ Fin           = 0
+cantTesorosEntre d h (Cofre obs c) = nSiCeroSino (cantidadDeTesoros obs) (d <= 0 ) + if (h > 0)
+                                                                                     then cantTesorosEntre (d-1) (h-1) c
+                                                                                     else 0
+
+-- desde  3 hasta  6
+--        .        .
+-- [m, m, m, m, m, m, m, m]    
+--    |   2        5
+--      | 1        4
+--        0        3
+--        0  |     2
+--        0     |  1
+--        0        0
+
+nSiCeroSino :: Int -> Bool -> Int
+nSiCeroSino n True = n
+nSiCeroSino _ _    = 0
+
 -- TIPOS DE ARBOLES
 
 -- 2 Arboles binarios
