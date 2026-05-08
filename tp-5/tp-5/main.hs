@@ -1,3 +1,7 @@
+import Set 
+import QueueCons
+import Stack
+
 -- Cálculo de costos
 
 -- 1. Especificar el costo operacional de las siguientes funciones:
@@ -23,9 +27,9 @@ pertenece :: Eq a => a -> [a] -> Bool -- > O(n) <Lineal> -> <n> es el largo de l
 pertenece n [] = False
 pertenece n (x:xs) = n == x || pertenece n xs
 
-sinRepetidos :: Eq a => [a] -> [a] -- > O(n) <Lineal> -> <n> es el largo de la lista
-sinRepetidos [] = []
-sinRepetidos (x:xs) = if pertenece x xs then sinRepetidos xs else x : sinRepetidos xs
+-- sinRepetidos :: Eq a => [a] -> [a] -- > O(n) <Lineal> -> <n> es el largo de la lista
+-- sinRepetidos [] = []
+-- sinRepetidos (x:xs) = if pertenece x xs then sinRepetidos xs else x : sinRepetidos xs
 
 append :: [a]-> [a] -> [a] -- > O(n) <Lineal> -> <n> es el largo de la primera lista
 append [] ys = ys
@@ -60,4 +64,64 @@ ordenar :: Ord a => [a] -> [a]  -- > O(n²) <Cuadratico> -> <n> es el largo de l
 ordenar [] = []
 orderar xs = let m = minimo xs in m : ordenar (sacar m xs)
 
+data Tree a = EmptyT | NodeT a (Tree a) (Tree a)
 
+-- 2.1
+losQuePertenecen :: Eq a => [a] -> Set a -> [a]
+losQuePertenecen []     _   = []
+losQuePertenecen (x:xs) set = singularSi x (belongs x set) ++ losQuePertenecen xs set
+
+singularSi :: a -> Bool -> [a]
+singularSi x True  = x:[]
+singularSi x False = []
+
+-- 2.2
+sinRepetidos :: Eq a => [a] -> [a]
+sinRepetidos list = setToList (listToSet list)
+
+listToSet :: Eq a => [a] -> Set a
+listToSet []     = emptyS
+listToSet (x:xs) = addS x (listToSet xs)
+
+-- 2.3
+unirTodos :: Eq a => Tree (Set a) -> Set a
+unirTodos EmptyT            = emptyS 
+unirTodos (NodeT set b1 b2) = unionS set (unionS (unirTodos b1) (unirTodos b2)) 
+
+
+
+-- 3.3 
+-- Como usuario del tipo abstracto Queue implementar las siguientes funciones
+
+lengthQ :: Queue a -> Int
+lengthQ queue = if (isEmptyQ queue)
+                    then 0
+                    else 1 + lengthQ (dequeue queue)
+
+queueToList :: Queue a -> [a]
+queueToList queue = if (isEmptyQ queue)
+                        then []
+                        else (firstQ queue) : queueToList (dequeue queue)
+
+unionQ :: Queue a -> Queue a -> Queue a
+unionQ queueA queueB = if (isEmptyQ queueA)
+                            then queueB
+                            else unionQ (dequeue queueA) (enqueue (firstQ queueA) queueB)
+
+
+-- 4.1
+apilar :: [a] -> Stack a
+apilar (x:xs) = push a (apilar xs)
+apilar _      = emptyS
+
+-- 4.2
+desapilar :: Stack a -> [a]
+desapilar stack = if (isEmptyS)
+                        then []
+                        else top stack : desapilar (pop stack)
+
+-- 4.3
+insertarEnPos :: Int -> a -> Stack a -> Stack a
+insertarEnPos pos elem stack = if (pos == 0)
+                            then push elem stack
+                            else push (top stack) (insertarEnPos (pos-1) elem (pop stack))

@@ -4,6 +4,8 @@ module Set
 
 data Set a = S [a]
 
+-- TODO: Mejorar disposicion para que sea como en Queue con costos
+
 -- 2.1
 emptyS :: Set a
 emptyS = (S [])
