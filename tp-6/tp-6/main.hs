@@ -72,4 +72,23 @@ assocValues :: Eq k => [(k, v)] -> Map k v -> Map k v
 assocValues ((k, v):kvs) map = assocM k v (assocValues kvs map)
 assocValues _            map = map
 
--- 5
+-- 5.1 
+indexar :: [a] -> Map Int a
+indexar as = indexar' (cantidadDeElementos as) as
+
+indexar' :: [a] -> Int -> Map Int a
+indexar' (x:xs) n = assocM n x (indexar' (n-1) xs) 
+indexar' _ _ = emptyM
+
+-- 5.2
+ocurrencias :: String -> Map Char Int
+ocurrencias (c:cs) = let restoDeOcurrencias = ocurrencias cs in assocM c (justOrCero (lookupM c restoDeOcurrencias) + 1) (restoDeOcurrencias)
+ocurrencias []     = emptyM
+
+justOrCero :: Maybe Int -> Int
+justOrCero (Just x) = x
+justOrCero Nothing = 0
+
+-- TODO COSTOS
+
+-- TODO 5.3.1 y 5.3.2
