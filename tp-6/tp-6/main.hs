@@ -1,4 +1,5 @@
 import PriorityQueue
+import MultiSet
 import Map
 
 -- 2
@@ -91,4 +92,9 @@ justOrCero Nothing = 0
 
 -- TODO COSTOS
 
--- TODO 5.3.1 y 5.3.2
+-- TODO 5.3.1
+
+-- 5.3
+ocurrencias :: String -> MultiSet Char Int
+ocurrencias (c:cs) = addMS c (ocurrencias cs)
+ocurrencias []     = emptyMS
