@@ -2,6 +2,7 @@ module MapDoubleL
     (Map, emptyM, assocM, lookupM, deleteM, keys) 
 where
 
+--TODO: Implementar Map usando DoubleList.
 data Map k v = M [k] [v]
 
 emptyM  :: Map k v                              -- 
