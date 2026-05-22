@@ -6,8 +6,6 @@ singularSi :: a -> Bool -> [a]
 singularSi x True  = x:[]
 singularSi x False = []
 
-data Maybe a = Nothing | Just a
-
 fromJust :: Maybe a -> a
 fromJust (Just x) = x
 

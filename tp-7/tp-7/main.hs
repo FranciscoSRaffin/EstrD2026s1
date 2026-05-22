@@ -1,5 +1,6 @@
 import Empresa
-
+-- DISCLAIMER: Esto nunca va a compilar ya que no se cuenta con la implementacion
+-- del tipo abstracto Empleado
 -- 1
 heapsort :: Ord a => [a] -> [a]
 -- El costo es <n log n> ya que, al usar un heap como representaciòn (costo de recorrigo logarimico)

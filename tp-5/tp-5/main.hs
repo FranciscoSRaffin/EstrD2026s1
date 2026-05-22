@@ -1,6 +1,9 @@
-import Set 
+import Set
 import QueueCons
 import Stack
+
+-- DISCLAIMER: Esto nunca va a compilar porque la practica exige usar Stack y Set
+--   y ambos se instancian con emptyS
 
 -- Cálculo de costos
 
@@ -62,7 +65,7 @@ sacar n (x:xs) = if n == x then xs else x : sacar n xs
 
 ordenar :: Ord a => [a] -> [a]  -- > O(n²) <Cuadratico> -> <n> es el largo de la lista
 ordenar [] = []
-orderar xs = let m = minimo xs in m : ordenar (sacar m xs)
+ordenar xs = let m = minimo xs in m : ordenar (sacar m xs)
 
 data Tree a = EmptyT | NodeT a (Tree a) (Tree a)
 
@@ -107,7 +110,6 @@ unionQ :: Queue a -> Queue a -> Queue a
 unionQ queueA queueB = if (isEmptyQ queueA)
                             then queueB
                             else unionQ (dequeue queueA) (enqueue (firstQ queueA) queueB)
-
 
 -- 4.1
 apilar :: [a] -> Stack a
