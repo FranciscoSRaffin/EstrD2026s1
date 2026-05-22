@@ -95,6 +95,6 @@ justOrCero Nothing = 0
 -- TODO 5.3.1
 
 -- 5.3
-ocurrencias :: String -> MultiSet Char Int
-ocurrencias (c:cs) = addMS c (ocurrencias cs)
-ocurrencias []     = emptyMS
+ocurrencias' :: String -> MultiSet Char Int
+ocurrencias' (c:cs) = addMS c (ocurrencias cs)
+ocurrencias' []     = emptyMS
