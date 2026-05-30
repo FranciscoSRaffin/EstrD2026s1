@@ -1,10 +1,7 @@
-
-
 struct Par {
     int x;
     int y;
 };
-
 
 // Propósito: construye un par
 Par consPar(int x, int y);
