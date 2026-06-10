@@ -1,9 +1,6 @@
-struct ArrayListSt {
-    int cantidad; // cantidad de elementos
-    int* elementos; // array de elementos
-    int capacidad; // tamaæo del array
-}
 
+struct ArrayListSt;
+typedef ArrayListSt* ArrayList;
 
 ArrayList newArrayList()
 // Crea una lista con 0 elementos.
