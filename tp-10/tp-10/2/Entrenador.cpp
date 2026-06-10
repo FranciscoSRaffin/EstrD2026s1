@@ -4,8 +4,7 @@ struct EntrenadorSt {
     int cantPokemon;
 }
 
-typdef EntrenadorSt* Entrenador;
-
+typedef EntrenadorSt* Entrenador;
 
 Entrenador consEntrenador(string nombre, int cantidad, Pokemon* pokemon) {
     EntrenadorSt* e = new EntrenadorSt;

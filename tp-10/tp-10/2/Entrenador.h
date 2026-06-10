@@ -1,5 +1,9 @@
+#include <iostream>
+using namespace std;
+#include "Entrenador-h"
 
-
+struct EntrenadorSt;
+typedef EntrenadorSt* Entrenador;
 
 Entrenador consEntrenador(string nombre, int cantidad, Pokemon* pokemon)
 // Dado un nombre, una cantidad de pokémon, y un array de pokémon de ese tamaño, devuelve
