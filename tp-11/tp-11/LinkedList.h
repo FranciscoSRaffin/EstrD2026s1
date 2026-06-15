@@ -7,6 +7,8 @@ struct LinkedListSt {
     // desde primero por siguiente hasta alcanzar a NULL
     int cantidad; // cantidad de elementos
     NodoL* primero; // puntero al primer nodo
+    NodoL* ultimo; // puntero al ultimo nodo
+
 };
 
 typedef LinkedListSt* LinkedList; // INV.REP.: el puntero NO es NULL
@@ -17,31 +19,34 @@ struct IteratorSt {
 typedef IteratorSt* ListIterator; // INV.REP.: el puntero NO es NULL
 // Definir la siguiente interfaz de este tipo de listas, indicando el costo obtenido (intentar que sea lo mÆs e ciente posible):
 
-LinkedList nil()
+LinkedList nil();
 // Crea una lista vaca.
-bool isEmpty(LinkedList xs)
+bool isEmpty(LinkedList xs);
 // Indica si la lista estÆ vaca.
-int head(LinkedList xs)
+int head(LinkedList xs);
 // Devuelve el primer elemento.
-void Cons(int x, LinkedList xs)
+void Cons(int x, LinkedList xs);
 // Agrega un elemento al principio de la lista.
-void Tail(LinkedList xs)
+void Tail(LinkedList xs);
 // Quita el primer elemento.
-int length(LinkedList xs)
+int length(LinkedList xs);
 // Devuelve la cantidad de elementos.
-void Snoc(int x, LinkedList xs)
+void Snoc(int x, LinkedList xs);
 // Agrega un elemento al final de la lista.
-ListIterator getIterator(LinkedList xs)
+ListIterator getIterator(LinkedList xs);
 // Apunta el recorrido al primer elemento.
-int current(ListIterator ixs)
+int current(ListIterator ixs);
 // Devuelve el elemento actual en el recorrido.
-void SetCurrent(int x, ListIterator ixs)
+void SetCurrent(int x, ListIterator ixs);
 // Reemplaza el elemento actual por otro elemento.
-void Next(ListIterator ixs)
+void Next(ListIterator ixs);
 // Pasa al siguiente elemento.
-bool atEnd(ListIterator ixs)
+bool atEnd(ListIterator ixs);
 // Indica si el recorrido ha terminado.
-void DisposeIterator(ListIterator ixs)
+void DisposeIterator(ListIterator ixs);
 // Libera la memoria ocupada por el iterador.
-void DestroyL(LinkedList xs)
+void DestroyL(LinkedList xs);
 // Libera la memoria ocupada por la lista.
+
+//3.
+void Append(LinkedList ys);
