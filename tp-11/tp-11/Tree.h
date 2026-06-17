@@ -1,9 +1,5 @@
-struct NodeT {
-    int elem;
-    NodeT* left;
-    NodeT* right;
-}
-typedef NodeT* Tree;
+struct NodeT;
+struct Tree;
 
 Tree emptyT();
 Tree nodeT(int elem, Tree left, Tree right);
