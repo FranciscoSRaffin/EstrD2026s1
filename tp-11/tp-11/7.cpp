@@ -1,78 +1,63 @@
-//  Dado un árbol binario de enteros devuelve la suma entre sus elementos.
 int sumarT(Tree t) {
-    if (t == NULL) {
-        return 0 
-    } else {
-        return t->elem + sumarT(t->left) + sumarT(t->right);
-    };
+    if isEmptyT(t) { return 0 }
+    return rootT(t) + sumarT(left(t)) + sumarT(right(t));
 };
 
-//  Dado un árbol binario devuelve su cantidad de elementos, es decir, el tamaño del árbol (size
-//en inglés).
 int sizeT(Tree t) {
-    if (t == NULL) {
-        return 0 
-    } else {
-        return 1 + sumarT(t->left) + sumarT(t->right);
-    }; 
+    if isEmptyT(t) { return 0 }; 
+    return 1 + sumarT(left(t)) + sumarT(right(t));
 };
 
-//  Dados un elemento y un árbol binario devuelve True si existe un elemento igual a ese en el
-// árbol.
 bool perteneceT(int e, Tree t) {
-    if (t == NULL) {
-        return  
-    } else {
-        return (e == t->elem)||
-               perteneceT(e, t->left) ||
-               perteneceT(e, t->right)
-        ;
-    }; 
+    if isEmptyT(t) { return false; }
+    return (e == rootT(t)) || perteneceT(e, left(t)) || perteneceT(e, right(t));
 };
 
-//  Dados un elemento e y un árbol binario devuelve la cantidad de elementos del árbol que son
-// iguales a e.
 int aparicionesT(int e, Tree t) {
-    if (t == NULL) {
-        return 0;
-    } else {
-        delta(t->elem == e) + aparicionesT(e, t->left) + aparicionesT(e, t->right)
-    }
+    if isEmptyT(t) { return 0; }
+    return delta(rootT(t) == e) + aparicionesT(e, left(t)) + aparicionesT(e, right(t))
 };
 
 int delta(bool b) { if b {return 1} else {return 0} };
 int max(int a, int b) { if a>b {return a} else {return b} };
 
-//  Dado un árbol devuelve su altura.
 int heightT(Tree t) {
-    if (t == NULL) {
-        return 0;
-    } else {
-        1 + max(heightT(t->left), heightT(t->right))
-    }
+    if isEmptyT(t) { return 0; } 
+    return 1 + max(heightT(left(t)), heightT(right(t)))
 };
 
-//  Dado un árbol devuelve una lista con todos sus elementos.
 ArrayList toList(Tree t) {
     ArrayList newArray = newArrayList();
-    
-    if (t == NULL) {
-        return newArray;
-    } else {
-        append(add(t->elem, newArray), (
-            append(toList(t->left), toList(t->right))
-        ))
+    if (!isEmptyT(t)) {
+        add(rootT(t), newArray);
+        append(
+            newArray,
+            append(toList(left(t)), toList(right(t)))
+        );
     };
-
-
+    return newArray;
 };
 
-//  Dado un árbol devuelve los elementos que se encuentran en sus hojas.
 ArrayList leaves(Tree t) {
+    ArrayList newArray = newArrayList();
 
+    if (!isEmptyT(t) && isEmptyT(left(t)) && isEmptyT(right(t))) {
+        add(newArray, rootT(t))
+    }
+    if (!isEmptyT(t) && (!isEmptyT(left(t)) || !isEmptyT(right(t)))) {
+        append(newArray, append(leaves(left(t)), leaves(right(t))));
+    }
+    return newArray;
 };
 
-//  Dados un número n y un árbol devuelve una lista con los nodos de nivel n.
 ArrayList levelN(int n, Tree t) {
+    ArrayList array = newArrayList();
+    
+    if(n==0) {
+        add(rootT(t), array)
+    } else {
+        append(array, append(levelN(n-1,left(t)), levelN(n-1,right(t))))
+    }
 
+    return array;
 };
