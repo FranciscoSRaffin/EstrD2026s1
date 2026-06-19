@@ -59,24 +59,18 @@ int sizeT(Tree t) {
 };
 
 bool perteneceT(int e, Tree t) {
+    if isEmptyT(t) { return false; }
     QueueT queue = emptyQ();
-    
-    encolarSiNoEsNulo(t, queue);
+    Tree nodo = t;
+    Enqueue(t, queue);
 
-    while (!isEmptyQ(queue)) {
-        Tree nodo = firstQ(queue); Dequeue(queue);
-        if (nodo->elem == e) {
-            DestroyQ(queue);
-            return true;
-        }
-        encolarSiNoEsNulo(nodo->left, queue);
-        encolarSiNoEsNulo(nodo->right, queue);
-        delete nodo; //  TODO: Ver clase para saber si esto hay que eliminarlo o no
+    while (!isEmptyQ(queue) && rootT(nodo) != e) {
+        nodo = firstQ(queue); Dequeue(queue);
+        encolarSiNoEsNulo(left(nodo), queue);
+        encolarSiNoEsNulo(right(nodo), queue);
     }
-    
     DestroyQ(queue);
-    return false;
-
+    return !isEmptyT(nodo) && rootT(nodo) == e;
 };
 
 int aparicionesT(int e, Tree t) {
@@ -119,3 +113,7 @@ ArrayList toList(Tree t) {
     DestroyQ(queue);
     return array;
 };
+
+
+Cerror "error blabla";
+exit(1);
